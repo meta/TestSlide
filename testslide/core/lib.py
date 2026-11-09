@@ -13,7 +13,7 @@ from collections.abc import Callable
 from functools import wraps
 from inspect import Traceback
 from types import FrameType
-from typing import Any, cast, TYPE_CHECKING, Union
+from typing import Any, cast, Tuple, TYPE_CHECKING, Union
 from unittest.mock import Mock
 
 import typeguard
@@ -25,12 +25,12 @@ else:
     from typing import _GenericAlias
 
     # Versions of `get_origin` that only support GenericAlias.
-    def get_origin(tp):
+    def get_origin(tp: object) -> Union[object, None]:
         if isinstance(tp, _GenericAlias):
             return tp.__origin__
         return None
 
-    def get_args(tp):
+    def get_args(tp: object) -> Tuple[object, ...]:
         if isinstance(tp, _GenericAlias) and tp.__origin__ is not abc.Callable:
             return tp.__args__
         return ()
