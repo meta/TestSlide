@@ -419,7 +419,7 @@ class NotEmptyList(AnyList):
 
 
 class EmptyList(AnyList):
-    def __eq__(self, other: list[AnyType]):  # type: ignore
+    def __eq__(self, other: list[AnyType]) -> bool:  # type: ignore
         return super().__eq__(other) and not bool(other)
 
 
@@ -510,7 +510,7 @@ class AnyContainingAll(Matcher):
 
 
 class AnyIterable(Matcher):
-    def __eq__(self, other: AnyType):
+    def __eq__(self, other: AnyType) -> bool:
         try:
             iter(other)
         except TypeError:
