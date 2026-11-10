@@ -56,7 +56,7 @@ class SlowCallback(Exception):
     """
 
 
-def get_active_tasks():
+def get_active_tasks() -> list[asyncio.Task[Any]]:
     return [
         task for task in get_all_tasks() if not task.done() and not task.cancelled()
     ]
@@ -406,8 +406,6 @@ class _TestSlideTestResult(unittest.TestResult):
         exc_type, exc_value, exc_traceback = err
         self.aggregated_exceptions.append_exception(exc_value)
 
-    # pyre-fixme[14]: `addError` overrides method defined in `TestResult`
-    #  inconsistently.
     def addError(  # type:ignore
         self,
         test: "TestCase",
@@ -423,8 +421,6 @@ class _TestSlideTestResult(unittest.TestResult):
         super().addError(test, err)  # type: ignore
         self._add_exception(err)
 
-    # pyre-fixme[14]: `addFailure` overrides method defined in `TestResult`
-    #  inconsistently.
     def addFailure(  # type:ignore
         self,
         test: "TestCase",  # type: ignore
