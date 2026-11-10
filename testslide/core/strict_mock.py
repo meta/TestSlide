@@ -8,7 +8,7 @@ import dis
 import inspect
 import os.path
 from collections.abc import Callable
-from types import FrameType
+from types import FrameType, TracebackType
 from typing import Any, get_type_hints, TYPE_CHECKING
 
 from . import lib, mock_callable
@@ -129,7 +129,7 @@ class UnsupportedMagic(BaseException):
 class _DefaultMagic:
     CONTEXT_MANAGER_METHODS = ["__enter__", "__exit__", "__aenter__", "__aexit__"]
 
-    def __init__(self, strict_mock: "StrictMock", name: str):
+    def __init__(self, strict_mock: "StrictMock", name: str) -> None:
         self.strict_mock = strict_mock
         self.name = name
 
@@ -443,18 +443,26 @@ class StrictMock:
     # To fix this; let's properly define these as real method on the object so
     # they get bound. They still will not be visible to outside code due to our
     # validating in __getattr__ that they match relevant entries in the template
-    def __enter_default_context_manager_helper__(self):
+    def __enter_default_context_manager_helper__(self) -> "StrictMock":
         return self
 
-    def __exit_default_context_manager_helper__(self, exc_type, exc_value, traceback):
+    def __exit_default_context_manager_helper__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         pass
 
-    async def __aenter_default_context_manager_helper__(self):
+    async def __aenter_default_context_manager_helper__(self) -> "StrictMock":
         return self
 
     async def __aexit_default_context_manager_helper__(
-        self, exc_type, exc_value, traceback
-    ):
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         pass
 
     def __setup_default_context_manager(self, default_context_manager: bool) -> None:
@@ -536,7 +544,7 @@ class StrictMock:
         else:
             return None
 
-    def __setup_subclass(self):
+    def __setup_subclass(self) -> None:
         """
         When StrictMock is subclassed, any attributes defined at the subclass
         will override any of StrictMock's validations. In order to overcome
