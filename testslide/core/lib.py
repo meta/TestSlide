@@ -170,6 +170,20 @@ def _validate_callable_signature(
     return True
 
 
+# Set by mock_constructor() on each mocked subclass, pointing at the class it replaces.
+MOCKED_CLASS_ORIGINAL_ATTR = "__testslide_mock_constructor_original_class__"
+
+
+def _unmock_expected_type(expected_type: Any) -> Any:
+    """
+    Annotations evaluated lazily (Python 3.14+) can resolve to a
+    mock_constructor() subclass; validate against the original class instead.
+    """
+    if isinstance(expected_type, type):
+        return vars(expected_type).get(MOCKED_CLASS_ORIGINAL_ATTR, expected_type)
+    return expected_type
+
+
 def _validate_argument_type(expected_type: type, name: str, value: Any) -> None:
     if "~" in str(expected_type):
         # this means that we have a TypeVar type, and those require
@@ -198,6 +212,7 @@ def _validate_argument_type(expected_type: type, name: str, value: Any) -> None:
         # Need testslide PR 333 to fix this: https://github.com/facebook/TestSlide/pull/333
         if isinstance(inner_expected_type, str):
             return
+        inner_expected_type = _unmock_expected_type(inner_expected_type)
 
         if _is_a_mock(inner_value):
             inner_type = _extract_mock_template(inner_value)

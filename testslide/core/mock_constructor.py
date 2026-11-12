@@ -13,6 +13,7 @@ from .lib import (
     _bail_if_private,
     _validate_callable_arg_types,
     _validate_callable_signature,
+    MOCKED_CLASS_ORIGINAL_ATTR,
 )
 
 _DO_NOT_COPY_CLASS_ATTRIBUTES = (
@@ -241,7 +242,8 @@ def _get_mocked_class(
             )
             if type_validation
             else callable_mock
-        )
+        ),
+        MOCKED_CLASS_ORIGINAL_ATTR: original_class,
     }
     mocked_class_dict.update(
         {
