@@ -243,7 +243,6 @@ def _get_mocked_class(
             if type_validation
             else callable_mock
         ),
-        MOCKED_CLASS_ORIGINAL_ATTR: original_class,
     }
     mocked_class_dict.update(
         {
@@ -257,6 +256,7 @@ def _get_mocked_class(
     mocked_class = type(
         str(original_class.__name__), (original_class,), mocked_class_dict, **kwargs
     )
+    setattr(mocked_class, MOCKED_CLASS_ORIGINAL_ATTR, original_class)
 
     # ...and deal with forbidden access to the original class
     for name in _restore_dict[target_class_id].keys():
