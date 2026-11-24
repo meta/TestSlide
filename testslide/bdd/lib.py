@@ -11,7 +11,7 @@ import re
 import time
 import types
 import unittest
-from collections.abc import Callable, Iterator
+from collections.abc import Awaitable, Callable, Iterator
 from contextlib import contextmanager
 from functools import partial
 from typing import Any, Optional, Union
@@ -62,7 +62,9 @@ def get_active_tasks() -> list[asyncio.Task[Any]]:
     ]
 
 
-async def _async_ensure_no_leaked_tasks(coro):
+async def _async_ensure_no_leaked_tasks(
+    coro: Awaitable[testslide.core.matchers.T],
+) -> testslide.core.matchers.T:
     before_example_tasks = get_active_tasks()
     result = await coro
     after_example_tasks = get_active_tasks()
@@ -332,7 +334,9 @@ class _ContextData:
         with self._sub_examples_agg_ex.catch():
             yield
 
-    def async_run_with_health_checks(self, coro):
+    def async_run_with_health_checks(
+        self, coro: Awaitable[testslide.core.matchers.T]
+    ) -> testslide.core.matchers.T:
         """
         Runs the given coroutine in a new event loop, and ensuring there's no
         task leakage.
